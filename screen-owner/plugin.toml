@@ -46,6 +46,19 @@ description_key = "settings.privilege_command.description"
 default = "pkexec"
 advanced = true
 
+# Поднимать демон при старте noctalia. Выключи, если предпочитаешь строчку
+# в hyprland.lua или запуск руками из панели.
+[[setting]]
+key = "autostart"
+type = "bool"
+label_key = "settings.autostart.label"
+description_key = "settings.autostart.description"
+default = true
+
+[[service]]
+id = "service"
+entry = "service.luau"
+
 [[panel]]
 id = "panel"
 entry = "panel.luau"

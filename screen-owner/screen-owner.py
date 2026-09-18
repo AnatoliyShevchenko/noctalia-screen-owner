@@ -348,7 +348,10 @@ def main():
                 name, mon = key.data
 
                 if name is None:  # события Hyprland
-                    for line in events.recv(1 << 13).decode().splitlines():
+                    data = events.recv(1 << 13)
+                    if not data:  # композитор ушёл — уходим и мы, а не крутим
+                        sys.exit("Hyprland закрыл сокет, выхожу")
+                    for line in data.decode().splitlines():
                         if line.startswith("focusedmon>>"):
                             current = line.split(">>", 1)[1].split(",")[0]
                         elif line.startswith(("monitoradded", "monitorremoved")):

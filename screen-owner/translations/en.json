@@ -29,6 +29,10 @@
     "privilege_command": {
       "label": "Privilege command",
       "description": "How to install the udev rule: pkexec or sudo. Asked once, on the first grant."
+    },
+    "autostart": {
+      "label": "Start with the session",
+      "description": "Launch the daemon when noctalia starts. Turn off to keep a line in hyprland.lua or start it by hand."
     }
   },
   "setup_why": "This plugin is only a panel. For it to have something to talk to, these are missing:",
@@ -40,11 +44,13 @@
   "installing_start": "Starting…",
   "installed": "All set, the daemon is running",
   "granting": "Granting…",
-  "autostart_why": "The daemon does not start with the session. Add a line to hyprland.lua.",
-  "autostart_copy": "Copy the line",
-  "autostart_copied": "Autostart line copied",
   "err_no_source": "screen-owner.py is missing from the plugin directory",
   "err_write": "Could not write {path}",
   "err_chmod": "Could not make the daemon executable",
-  "err_pacman": "pacman failed — check the privilege command in settings"
+  "err_pacman": "pacman failed — check the privilege command in settings",
+  "running": "Daemon is running",
+  "stopped": "Daemon is not running",
+  "run": "Run",
+  "stop": "Stop",
+  "err_start": "Could not start the daemon"
 }

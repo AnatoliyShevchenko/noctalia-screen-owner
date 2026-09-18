@@ -19,7 +19,6 @@ local INSTALL_TIMEOUT_MS = 180000 -- ставится пакет, и между 
 
 local DAEMON_SOURCE = "screen-owner.py" -- рядом с этим файлом, внутри плагина
 local DAEMON_TARGET = "~/.local/bin/screen-owner"
-local AUTOSTART_LINE = 'hl.exec_cmd(bin("screen-owner"))'
 
 local pluginVersion = (function()
     local text = noctalia.readFile("plugin.toml")
@@ -267,11 +266,12 @@ local function installEvdev(done)
     end)
 end
 
+-- setsid -f отвязывает процесс сразу: он переживёт и таймаут runAsync, и
+-- перезагрузку плагина. Умрёт сам, когда Hyprland закроет сокет.
 local function startDaemon(done)
-    -- Запуск без ожидания: демон живёт, пока жив сеанс, поэтому короткий
-    -- таймаут тут ничего не значит — важно только, что процесс поднялся.
-    noctalia.runAsync({ daemonPath() }, function() end, 1)
-    done(true, nil)
+    run({ "setsid", "-f", daemonPath() }, TIMEOUT_MS, function(ok)
+        done(ok, ok and nil or tr("err_start"))
+    end)
 end
 
 local function finishInstall(ok, err)
@@ -344,9 +344,28 @@ function onGrantAccess()
     end)
 end
 
-function onCopyAutostart()
-    noctalia.copyToClipboard(AUTOSTART_LINE)
-    noctalia.notify(tr("autostart_copied"))
+function onToggleRun()
+    if busy then
+        return
+    end
+    busy = true
+    render()
+    if setup and setup.running then
+        run({ "pkill", "-f", daemonPath() }, TIMEOUT_MS, function()
+            busy = false
+            refresh()
+        end)
+    else
+        startDaemon(function(ok, err)
+            busy = false
+            if not ok then
+                status = err
+                render()
+            else
+                refresh()
+            end
+        end)
+    end
 end
 
 function onPickMonitor(action, context)
@@ -475,18 +494,27 @@ render = function()
             }))
         end
 
-        -- Автозапуск не прописываем сами: hyprland.lua — чужая территория,
-        -- строку проще отдать в буфер, чем править конфиг компоновщика.
-        if setup ~= nil and not setup.running then
-            table.insert(children, ui.separator({ key = "sep-auto" }))
-            table.insert(children, ui.row({ key = "auto-row", gap = 8, align = "center" }, {
-                ui.label({ key = "auto-why", text = tr("autostart_why"), fontSize = 11, color = "on_surface_variant", flexGrow = 1, maxLines = 3 }),
+        -- Состояние демона и переключатель. Строчка в hyprland.lua не нужна:
+        -- при входе его поднимает service.luau, тут — только руками.
+        if setup ~= nil then
+            local alive = setup.running
+            table.insert(children, ui.separator({ key = "sep-run" }))
+            table.insert(children, ui.row({ key = "run-row", gap = 8, align = "center" }, {
+                ui.label({
+                    key = "run-state",
+                    text = alive and tr("running") or tr("stopped"),
+                    fontSize = 11,
+                    color = alive and "on_surface_variant" or "error",
+                    flexGrow = 1,
+                    maxLines = 2,
+                }),
                 ui.button({
-                    key = "auto-copy",
-                    glyph = "copy",
-                    text = tr("autostart_copy"),
-                    variant = "ghost",
-                    onClick = "onCopyAutostart",
+                    key = "run-toggle" .. (alive and "-on" or "") .. (busy and "-off" or ""),
+                    glyph = alive and "stop" or "play",
+                    text = alive and tr("stop") or tr("run"),
+                    variant = alive and "ghost" or "primary",
+                    enabled = not busy,
+                    onClick = "onToggleRun",
                 }),
             }))
         end
