@@ -1,0 +1,34 @@
+{
+  "title": "Screen Owner",
+  "loading": "Asking the daemon…",
+  "empty": "No keyboards or mice found. Is the daemon running?",
+  "unassigned": "unassigned",
+  "no_access": "· no access",
+  "single_monitor": "Only one monitor is connected — nothing to switch to, assignments are kept.",
+  "grant": "Grant access",
+  "access_why": "Some devices have no permissions. A udev rule is needed, and it is written as root.",
+  "access_granted": "Access granted, udev rule updated",
+  "tip_row": "Click for the next monitor, right-click to pick one",
+  "tip_refresh": "Re-read the device list",
+  "tip_settings": "Plugin settings",
+  "tip_close": "Close",
+  "menu": {
+    "assign": "Give it {monitor}",
+    "unassign": "Unassign"
+  },
+  "err_timeout": "The daemon did not answer in time",
+  "err_failed": "The daemon returned an error",
+  "err_bad_json": "Could not parse the daemon's answer",
+  "err_spawn": "Could not run {cmd}",
+  "err_access": "Granting access failed — check the privilege command setting",
+  "settings": {
+    "command": {
+      "label": "Daemon command",
+      "description": "Path to screen-owner. The panel calls it with devices, monitors and assign."
+    },
+    "privilege_command": {
+      "label": "Privilege command",
+      "description": "How to install the udev rule: pkexec or sudo. Asked once, on the first grant."
+    }
+  }
+}

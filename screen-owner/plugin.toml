@@ -1,0 +1,55 @@
+# Screen Owner — панель к демону screen-owner.
+#
+# Демон (~/.local/bin/screen-owner) делает всю работу: держит EVIOCGRAB,
+# пишет в uinput, слушает сокет Hyprland. Из Luau этого не сделать, поэтому
+# плагин — только лицо: показывает железки и правит ~/.config/screen-owner/
+# config.json через CLI демона. Демон перечитывает конфиг сам, в течение
+# трёх секунд.
+#
+# plugin_api = 28: 24 нужен для запуска процессов вектором аргументов (ни одна
+# команда не уходит в шелл), 28 — для panel.openContextMenu на строке железки.
+
+id = "brick/screen-owner"
+name = "Screen Owner"
+version = "0.1.0"
+plugin_api = 28
+author = "brick"
+license = "MIT"
+icon = "keyboard"
+description = "Каждый комплект клавиатура+мышь владеет своим монитором"
+tags = ["input", "hardware", "panel", "hyprland"]
+dependencies = ["screen-owner"]
+
+[[setting]]
+key = "command"
+type = "string"
+label_key = "settings.command.label"
+description_key = "settings.command.description"
+default = "~/.local/bin/screen-owner"
+
+# Правило udev пишется в /etc/udev/rules.d — только под root. Тот же приём,
+# что у dns-switcher: команда повышения прав задаётся пользователем, а не
+# зашита в код.
+[[setting]]
+key = "privilege_command"
+type = "string"
+label_key = "settings.privilege_command.label"
+description_key = "settings.privilege_command.description"
+default = "pkexec"
+advanced = true
+
+[[panel]]
+id = "panel"
+entry = "panel.luau"
+# Ширины хватает на самое длинное имя железки вместе с именем монитора.
+width = 420
+height = 430
+placement = "attached"
+open_near_click = true
+
+[[widget]]
+id = "screen-owner"
+entry = "widget.luau"
+
+  [widget.actions]
+  left = "panel-toggle brick/screen-owner:panel"

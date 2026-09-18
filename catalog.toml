@@ -1,0 +1,19 @@
+# Каталог собственного источника плагинов.
+# Подключается один раз:
+#   noctalia msg plugins source add brick git <url этого репозитория>
+# Дальше обновления приезжают через:
+#   noctalia msg plugins update brick
+
+[[plugin]]
+id = "brick/screen-owner"
+name = "Screen Owner"
+version = "0.1.0"
+updated_at = 1789735736
+added_at = 1789735736
+author = "brick"
+license = "MIT"
+icon = "keyboard"
+description = "Каждый комплект клавиатура+мышь владеет своим монитором"
+deprecated = false
+plugin_api = 28
+tags = ["input", "hardware", "panel", "hyprland"]
