@@ -30,5 +30,21 @@
       "label": "Privilege command",
       "description": "How to install the udev rule: pkexec or sudo. Asked once, on the first grant."
     }
-  }
+  },
+  "setup_why": "This plugin is only a panel. For it to have something to talk to, these are missing:",
+  "missing_evdev": "• python-evdev — the daemon is written in it",
+  "missing_daemon": "• the daemon itself, in ~/.local/bin/screen-owner",
+  "install": "Install",
+  "installing_evdev": "Installing python-evdev…",
+  "installing_daemon": "Placing the daemon…",
+  "installing_start": "Starting…",
+  "installed": "All set, the daemon is running",
+  "granting": "Granting…",
+  "autostart_why": "The daemon does not start with the session. Add a line to hyprland.lua.",
+  "autostart_copy": "Copy the line",
+  "autostart_copied": "Autostart line copied",
+  "err_no_source": "screen-owner.py is missing from the plugin directory",
+  "err_write": "Could not write {path}",
+  "err_chmod": "Could not make the daemon executable",
+  "err_pacman": "pacman failed — check the privilege command in settings"
 }

@@ -37,27 +37,43 @@
 
 ## Установка
 
-Демон и плагин ставятся отдельно — репозиторий один, но noctalia забирает
-из него только каталог `screen-owner/`.
-
 ```sh
-git clone https://github.com/AnatoliyShevchenko/noctalia-screen-owner ~/Projects/noctalia-screen-owner
-ln -s ~/Projects/noctalia-screen-owner/daemon/screen-owner ~/.local/bin/screen-owner
-
 noctalia msg plugins source add brick git https://github.com/AnatoliyShevchenko/noctalia-screen-owner
 noctalia msg plugins enable brick/screen-owner
 ```
 
-Симлинк, а не копия: тогда `git pull` обновляет и демон тоже.
+Дальше открой панель и нажми **Установить**. Она сама:
 
-Автозапуск демона — строкой в `hyprland.lua`, рядом с остальными:
+1. поставит `python-evdev` через `pacman` под `pkexec` (пароль спросит polkit);
+2. положит демон из каталога плагина в `~/.local/bin/screen-owner`;
+3. запустит его.
+
+Демон едет внутри `screen-owner/` именно поэтому: noctalia материализует из
+источника только каталог плагина, всё остальное в репозитории до чужой машины
+не доезжает.
+
+Права на устройства выдаёт кнопка **Выдать доступ** — она собирает правило
+udev из VID:PID тех железок, что ты назначил, и ставит его тем же `pkexec`.
+
+Автозапуск панель **не** прописывает: `hyprland.lua` — твоя территория. Она
+показывает строку и кладёт её в буфер:
 
 ```lua
 hl.exec_cmd(bin("screen-owner"))
 ```
 
-Права на устройства выдаёт сама панель кнопкой «Выдать доступ».
-Обновления потом: `git pull` плюс `noctalia msg plugins update brick`.
+### Если правишь код
+
+Тогда не копия, а симлинк, чтобы `git pull` обновлял демон заодно:
+
+```sh
+git clone https://github.com/AnatoliyShevchenko/noctalia-screen-owner ~/Projects/noctalia-screen-owner
+ln -s ~/Projects/noctalia-screen-owner/screen-owner/screen-owner.py ~/.local/bin/screen-owner
+```
+
+Панель существующий файл не трогает — пишет только когда его нет.
+
+Обновления: `noctalia msg plugins update brick`.
 
 ## Панель
 
