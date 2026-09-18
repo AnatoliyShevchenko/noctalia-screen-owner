@@ -37,12 +37,27 @@
 
 ## Установка
 
+Демон и плагин ставятся отдельно — репозиторий один, но noctalia забирает
+из него только каталог `screen-owner/`.
+
 ```sh
-noctalia msg plugins source add brick git <url этого репозитория>
+git clone https://github.com/AnatoliyShevchenko/noctalia-screen-owner ~/Projects/noctalia-screen-owner
+ln -s ~/Projects/noctalia-screen-owner/daemon/screen-owner ~/.local/bin/screen-owner
+
+noctalia msg plugins source add brick git https://github.com/AnatoliyShevchenko/noctalia-screen-owner
 noctalia msg plugins enable brick/screen-owner
 ```
 
-Обновления потом: `noctalia msg plugins update brick`.
+Симлинк, а не копия: тогда `git pull` обновляет и демон тоже.
+
+Автозапуск демона — строкой в `hyprland.lua`, рядом с остальными:
+
+```lua
+hl.exec_cmd(bin("screen-owner"))
+```
+
+Права на устройства выдаёт сама панель кнопкой «Выдать доступ».
+Обновления потом: `git pull` плюс `noctalia msg plugins update brick`.
 
 ## Панель
 
@@ -60,9 +75,11 @@ noctalia msg plugins enable brick/screen-owner
 Hyprland (`hl.dsp.focus`, `hl.dsp.cursor.move`), а noctalia живёт ещё на Niri,
 sway и labwc. Плагин сделан для себя и честно объявлен Hyprland-only.
 
-**Самого демона в этом репозитории.** Он ставится отдельно и требует
-python-evdev. Если однажды захочется отдать плагин людям — демон придётся
-класть рядом и запускать из каталога плагина.
+**Поддержки не-USB устройств.** Железки опознаются по `/dev/input/by-id/`,
+а туда попадает только USB — на десктопе это 6 нод из 25. Встроенная
+клавиатура ноутбука (PS/2) и тачпад (i2c) живут лишь в `by-path`, поэтому
+выбрать их в панели пока нельзя. Чинится смешанной идентификацией и отдельной
+формой udev-правила: у не-USB устройств нет `ATTRS{idVendor}`.
 
 ## Замечания по устройству
 
